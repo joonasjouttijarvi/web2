@@ -1,7 +1,7 @@
 import { promisePool } from "../../database/db";
 import CustomError from "../../classes/CustomError";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { Cat } from "../../types/DBTypes";
+import { Cat, CatData } from "../../types/DBTypes";
 import { MessageResponse, UploadResponse } from "../../types/MessageTypes";
 
 const getAllCats = async (): Promise<Cat[]> => {
@@ -52,7 +52,7 @@ const getCat = async (catId: number): Promise<Cat> => {
 
 // TODO: use Utility type to modify Cat type for 'data'.
 // Note that owner is not User in this case. It's just a number (user_id)
-const addCat = async (data): Promise<MessageResponse> => {
+const addCat = async (data:CatData): Promise<MessageResponse> => {
   const [headers] = await promisePool.execute<ResultSetHeader>(
     `
     INSERT INTO sssf_cat (cat_name, weight, owner, filename, birthdate, coords) 
@@ -64,8 +64,8 @@ const addCat = async (data): Promise<MessageResponse> => {
       data.owner,
       data.filename,
       data.birthdate,
-      data.lat,
-      data.lng,
+      data.coords.lat,
+      data.coords.lng,
     ]
   );
   if (headers.affectedRows === 0) {

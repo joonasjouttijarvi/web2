@@ -27,4 +27,4 @@ const login = (req: Request, res: Response, next: NextFunction) => {
   )(req, res, next);
 };
 
-export {login};
+export {login}; 

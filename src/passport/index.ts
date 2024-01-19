@@ -22,7 +22,7 @@ passport.use(
   })
 );
 
-// consider .env for secret, e.g. secretOrKey: process.env.JWT_SECRET
+
 passport.use(
   new JWTStrategy(
     {

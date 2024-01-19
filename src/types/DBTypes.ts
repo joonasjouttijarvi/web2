@@ -7,7 +7,6 @@ type User = {
 };
 
 type Cat = {
-  // TODO: create a cat type
   // owner should be a User or a number
   cat_id: number;
   cat_name: string;
@@ -18,6 +17,9 @@ type Cat = {
   coords: { lat: number; lng: number };
 };
 
-export { Cat };
+export type CatData = Omit<Cat, "cat_id" | "owner"> & {
+  owner: number | User;
+};
+export { Cat, User };
+export type NewUserData = Omit<User, "user_id">;
 
-export { User };

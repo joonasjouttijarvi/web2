@@ -5,12 +5,12 @@ import {
   getUser,
   updateUser,
 } from '../models/userModel';
-import {Request, Response, NextFunction} from 'express';
+import { Request, Response, NextFunction } from 'express';
 import CustomError from '../../classes/CustomError';
 import bcrypt from 'bcryptjs';
-import {User} from '../../types/DBTypes';
-import {MessageResponse} from '../../types/MessageTypes';
-import {validationResult} from 'express-validator';
+import { User } from "../../types/DBTypes";
+import { MessageResponse } from '../../types/MessageTypes';
+import { validationResult } from 'express-validator';
 const salt = bcrypt.genSaltSync(12);
 
 const userListGet = async (
@@ -27,7 +27,7 @@ const userListGet = async (
 };
 
 const userGet = async (
-  req: Request<{id: string}, {}, {}>,
+  req: Request<{ id: string }, {}, {}>,
   res: Response<User>,
   next: NextFunction
 ) => {
@@ -47,9 +47,42 @@ const userGet = async (
 // - email should be a valid email
 // - password should be at least 5 characters long
 // userPost should use bcrypt to hash password
+const userPost = async (
+  req: Request,
+  res: Response<MessageResponse>,
+  next: NextFunction
+) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const messages: string = errors
+      .array()
+      .map((error) => `${error.msg}: ${error.param}`)
+      .join(', ');
+    next(new CustomError(messages, 400));
+    return;
+  }
+
+  try {
+    const { user_name, email, password } = req.body;
+    const hashedPassword = bcrypt.hashSync(password, salt);
+    const newUser: User = {
+      user_id: 0,
+      user_name,
+      email,
+      password: hashedPassword,
+      role: 'user',
+    };
+
+    const result = await addUser(newUser);
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 const userPut = async (
-  req: Request<{id: number}, {}, User>,
+  req: Request<{ id: number }, {}, User>,
   res: Response<MessageResponse>,
   next: NextFunction
 ) => {
@@ -82,17 +115,74 @@ const userPut = async (
 // TODO: create userPutCurrent function to update current user
 // userPutCurrent should use updateUser function from userModel
 // userPutCurrent should use validationResult to validate req.body
+const userPutCurrent = async (
+  req: Request<{ id: number }, {}, User>,
+  res: Response<MessageResponse>,
+  next: NextFunction
+) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const messages: string = errors
+      .array()
+      .map((error) => `${error.msg}: ${error.param}`)
+      .join(', ');
+    next(new CustomError(messages, 400));
+    return;
+  }
+
+  try {
+    const user = req.body;
+    if (user.password) {
+      user.password = bcrypt.hashSync(user.password, salt);
+    }
+
+    const result = await updateUser(user, req.params.id);
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // TODO: create userDelete function for admin to delete user by id
 // userDelete should use deleteUser function from userModel
 // userDelete should use validationResult to validate req.params.id
 // userDelete should use req.user to get role
+const userDelete = async (
+  req: Request<{ id: number, }, {}, {}>,
+  res: Response<MessageResponse>,
+  next: NextFunction
+) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const messages: string = errors
+      .array()
+      .map((error) => `${error.msg}: ${error.param}`)
+      .join(', ');
+    next(new CustomError(messages, 400));
+    return;
+  }
+
+  try {
+    if (!req.user || req.user.role !== 'admin') {
+      throw new CustomError('Admin only', 403);
+    }
+
+    const id = Number(req.params.id);
+    const result = await deleteUser(id);
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 const userDeleteCurrent = async (
   req: Request,
   res: Response<MessageResponse>,
   next: NextFunction
 ) => {
+  const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const messages: string = errors
       .array()

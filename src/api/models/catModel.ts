@@ -111,7 +111,7 @@ const deleteCat = async (catId: number): Promise<MessageResponse> => {
     [catId]
   );
   if (headers.affectedRows === 0) {
-    throw new CustomError('No cats deleted', 400);
+    throw new CustomError('No cats deleted', 404);
   }
   return { message: 'Cat deleted' };
 };

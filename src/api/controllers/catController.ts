@@ -5,11 +5,11 @@ import {
   getCat,
   updateCat,
 } from '../models/catModel';
-import { Request, Response, NextFunction } from 'express';
+import {Request, Response, NextFunction} from 'express';
 import CustomError from '../../classes/CustomError';
-import { validationResult } from 'express-validator';
-import { MessageResponse } from '../../types/MessageTypes';
-import { Cat, User } from '../../types/DBTypes';
+import {validationResult} from 'express-validator';
+import {MessageResponse} from '../../types/MessageTypes';
+import {Cat, User} from '../../types/DBTypes';
 
 const catListGet = async (
   _req: Request,
@@ -47,8 +47,8 @@ const catGet = async (req: Request, res: Response<Cat>, next: NextFunction) => {
 
 // TODO: create catPost function to add new cat
 const catPost = async (
-  req: Request<{}, {}, Omit<Cat, 'owner'> & { owner: number }>,
-  res: Response<MessageResponse, { coords: [number, number] }>,
+  req: Request<{}, {}, Omit<Cat, 'owner'> & {owner: number}>,
+  res: Response<MessageResponse, {coords: [number, number]}>,
   next: NextFunction
 ) => {
   const errors = validationResult(req);
@@ -66,10 +66,10 @@ const catPost = async (
     if (!req.user?.user_id) {
       throw new CustomError('No user', 400);
     }
-    const newCat: Omit<Cat, 'owner'> & { owner: number } = {
+    const newCat: Omit<Cat, 'owner'> & {owner: number} = {
       ...req.body,
       owner: req.user.user_id,
-      ...(req.file && { filename: req.file.filename }),
+      ...(req.file && {filename: req.file.filename}),
       ...(res.locals.coords && {
         lat: res.locals.coords[0],
         lng: res.locals.coords[1],
@@ -83,7 +83,7 @@ const catPost = async (
 };
 
 const catPut = async (
-  req: Request<{ id: string }, {}, Cat>,
+  req: Request<{id: string}, {}, Cat>,
   res: Response<MessageResponse>,
   next: NextFunction
 ) => {
@@ -119,7 +119,7 @@ const catPut = async (
 // catDelete should use deleteCat function from catModel
 // catDelete should use validationResult to validate req.params.id
 const catDelete = async (
-  req: Request<{ id: string }, {}, {}>,
+  req: Request<{id: string}, {}, {}>,
   res: Response<MessageResponse>,
   next: NextFunction
 ) => {
@@ -146,4 +146,4 @@ const catDelete = async (
   }
 };
 
-export { catListGet, catGet, catPost, catPut, catDelete };
+export {catListGet, catGet, catPost, catPut, catDelete};

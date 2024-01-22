@@ -5,12 +5,12 @@ import {
   getUser,
   updateUser,
 } from '../models/userModel';
-import { Request, Response, NextFunction } from 'express';
+import {Request, Response, NextFunction} from 'express';
 import CustomError from '../../classes/CustomError';
 import bcrypt from 'bcryptjs';
-import { User } from "../../types/DBTypes";
-import { MessageResponse } from '../../types/MessageTypes';
-import { validationResult } from 'express-validator';
+import {User} from '../../types/DBTypes';
+import {MessageResponse} from '../../types/MessageTypes';
+import {validationResult} from 'express-validator';
 const salt = bcrypt.genSaltSync(12);
 
 const userListGet = async (
@@ -27,7 +27,7 @@ const userListGet = async (
 };
 
 const userGet = async (
-  req: Request<{ id: string }, {}, {}>,
+  req: Request<{id: string}, {}, {}>,
   res: Response<User>,
   next: NextFunction
 ) => {
@@ -63,7 +63,7 @@ const userPost = async (
   }
 
   try {
-    const { user_name, email, password } = req.body;
+    const {user_name, email, password} = req.body;
     const hashedPassword = bcrypt.hashSync(password, salt);
     const newUser: User = {
       user_id: 0,
@@ -82,7 +82,7 @@ const userPost = async (
 };
 
 const userPut = async (
-  req: Request<{ id: number }, {}, User>,
+  req: Request<{id: number}, {}, User>,
   res: Response<MessageResponse>,
   next: NextFunction
 ) => {
@@ -116,7 +116,7 @@ const userPut = async (
 // userPutCurrent should use updateUser function from userModel
 // userPutCurrent should use validationResult to validate req.body
 const userPutCurrent = async (
-  req: Request<{ id: number }, {}, User>,
+  req: Request<{id: number}, {}, User>,
   res: Response<MessageResponse>,
   next: NextFunction
 ) => {
@@ -149,7 +149,7 @@ const userPutCurrent = async (
 // userDelete should use validationResult to validate req.params.id
 // userDelete should use req.user to get role
 const userDelete = async (
-  req: Request<{ id: number, }, {}, {}>,
+  req: Request<{id: number}, {}, {}>,
   res: Response<MessageResponse>,
   next: NextFunction
 ) => {
